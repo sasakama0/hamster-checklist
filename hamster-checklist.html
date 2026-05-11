@@ -4,21 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>きょうのプロフィール帳チェックリスト</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.0/supabase.umd.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;background:#fff8f0;min-height:100vh;}
 .app{padding:10px;max-width:480px;margin:0 auto;}
+.card{background:#fff;border-radius:16px;border:2px solid #ffd9a0;padding:12px;margin-bottom:10px;}
+.card-pink{border-color:#ffb3cc;background:#fff9fb;}
+.card-green{border-color:#b8e6b0;background:#f6fff4;}
+.card-blue{border-color:#b0d4f5;background:#f4f9ff;}
+.card-yellow{border-color:#ffe066;background:#fffdf0;}
+.sec-title{font-size:14px;font-weight:700;color:#7a4a2a;display:flex;align-items:center;gap:5px;margin-bottom:8px;}
 
-/* Setup screen */
-.setup{background:#fff;border-radius:16px;border:2px solid #ffd9a0;padding:20px;margin:20px auto;max-width:400px;}
-.setup h2{font-size:16px;color:#7a4a2a;margin-bottom:6px;text-align:center;}
-.setup p{font-size:12px;color:#c08050;margin-bottom:16px;text-align:center;line-height:1.6;}
-.setup label{font-size:12px;color:#8a5a2a;display:block;margin-bottom:4px;font-weight:700;}
-.setup input{width:100%;border:1.5px solid #ffddb0;border-radius:8px;padding:8px 10px;font-size:13px;color:#5a3a1a;margin-bottom:12px;outline:none;font-family:inherit;}
-.setup input:focus{border-color:#ffb347;}
-.btn-primary{width:100%;background:#ffb347;color:white;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
-.btn-primary:active{background:#e89820;}
+/* Auth screen */
+.auth-wrap{background:#fff;border-radius:16px;border:2px solid #ffd9a0;padding:24px;margin:20px auto;max-width:380px;}
+.auth-wrap h2{font-size:17px;font-weight:700;color:#7a4a2a;text-align:center;margin-bottom:4px;}
+.auth-sub{font-size:11px;color:#c08050;text-align:center;margin-bottom:20px;line-height:1.6;}
+.auth-label{font-size:12px;color:#8a5a2a;font-weight:700;display:block;margin-bottom:4px;}
+.auth-input{width:100%;border:1.5px solid #ffddb0;border-radius:10px;padding:10px;font-size:14px;color:#5a3a1a;outline:none;font-family:inherit;margin-bottom:12px;}
+.auth-input:focus{border-color:#ffb347;}
+.btn-primary{width:100%;background:#ffb347;color:white;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+.btn-secondary{width:100%;background:#fff9f0;color:#c08050;border:1.5px solid #ffddb0;border-radius:12px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
 .ham-big{text-align:center;font-size:48px;margin-bottom:10px;}
+.auth-msg{font-size:12px;text-align:center;margin-top:8px;padding:8px;border-radius:8px;}
+.auth-msg.err{background:#fff0f0;color:#e06060;}
+.auth-msg.ok{background:#f0fff0;color:#60a860;}
+.auth-toggle{font-size:12px;color:#c08050;text-align:center;margin-top:12px;cursor:pointer;text-decoration:underline;}
 
 /* Header */
 .header-wrap{background:#fff;border-radius:16px;border:2px solid #ffd9a0;padding:12px;margin-bottom:10px;text-align:center;}
@@ -32,6 +43,7 @@ body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;backgrou
 .kb{width:40px;height:40px;border-radius:50%;border:2px solid #ffddb0;background:#fff9f0;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.15s,background 0.15s;}
 .kb.sel{background:#ffd9a0;border-color:#e8a040;transform:scale(1.18);}
 .hitokoto{width:100%;border:none;border-bottom:1.5px dashed #ffddb0;background:transparent;font-size:12px;color:#7a4a2a;outline:none;margin-top:6px;padding:4px 2px;font-family:inherit;}
+.logout-btn{background:none;border:none;color:#ddb090;font-size:10px;text-decoration:underline;cursor:pointer;font-family:inherit;margin-top:4px;}
 
 /* Tabs */
 .tabs{display:flex;border-radius:12px;overflow:hidden;border:2px solid #ffd9a0;margin-bottom:10px;}
@@ -39,14 +51,6 @@ body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;backgrou
 .tab.on{background:#ffb347;color:white;}
 .pg{display:none;}
 .pg.on{display:block;}
-
-/* Cards */
-.card{background:#fff;border-radius:16px;border:2px solid #ffd9a0;padding:12px;margin-bottom:10px;}
-.card-pink{border-color:#ffb3cc;background:#fff9fb;}
-.card-green{border-color:#b8e6b0;background:#f6fff4;}
-.card-blue{border-color:#b0d4f5;background:#f4f9ff;}
-.card-yellow{border-color:#ffe066;background:#fffdf0;}
-.sec-title{font-size:14px;font-weight:700;color:#7a4a2a;display:flex;align-items:center;gap:5px;margin-bottom:8px;}
 
 /* Yotei */
 .yotei-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed #ffddb0;}
@@ -104,29 +108,31 @@ body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;backgrou
 /* History */
 .history-item{background:#fff9f0;border-radius:10px;padding:10px;border:1.5px solid #ffddb0;margin-bottom:8px;}
 .hi-date{font-size:12px;font-weight:700;color:#8a5a2a;margin-bottom:4px;}
-.hi-kibun{font-size:18px;}
-.hi-checks{font-size:11px;color:#c08050;margin-top:4px;}
+
+/* Save */
 .save-btn{width:100%;background:#ff9ec4;color:white;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;}
 .save-btn:active{background:#e07090;}
 .msg{text-align:center;font-size:13px;color:#60a860;font-weight:700;padding:8px;background:#f0fff0;border-radius:8px;margin-bottom:8px;display:none;}
 .txt-input{width:100%;border:1.5px solid #ffddb0;border-radius:8px;padding:6px 10px;font-size:12px;color:#5a3a1a;outline:none;font-family:inherit;margin-top:4px;}
+.loading{text-align:center;color:#c08050;font-size:13px;padding:20px;}
 </style>
 </head>
 <body>
 
-<!-- Setup Screen -->
-<div id="setupScreen" class="app" style="display:none;">
-  <div class="setup">
+<!-- Auth Screen -->
+<div id="authScreen" class="app" style="display:none;">
+  <div class="auth-wrap">
     <div class="ham-big">🐹</div>
-    <h2>はじめの せってい</h2>
-    <p>Supabaseの じょうほうを にゅうりょくしてね！<br>いちどだけ でいいよ♪</p>
-    <label>Supabase URL</label>
-    <input type="text" id="setupUrl" placeholder="https://xxxx.supabase.co">
-    <label>Publishable Key</label>
-    <input type="text" id="setupKey" placeholder="sb_publishable_...">
-    <button class="btn-primary" onclick="saveSetup()">せってい かんりょう！</button>
-    <div style="text-align:center;margin-top:12px;">
-      <button onclick="resetSetup()" style="background:none;border:none;color:#c08050;font-size:12px;text-decoration:underline;cursor:pointer;font-family:inherit;">せっていを リセットする</button>
+    <h2>きょうのプロフィール帳</h2>
+    <div class="auth-sub">ASDキッズのための まいにちチェックリスト🌸<br>はじめての方は「あたらしく はじめる」を！</div>
+    <div id="authForm">
+      <label class="auth-label">メールアドレス</label>
+      <input class="auth-input" type="email" id="authEmail" placeholder="example@email.com">
+      <label class="auth-label">パスワード（6文字以上）</label>
+      <input class="auth-input" type="password" id="authPassword" placeholder="••••••••">
+      <button class="btn-primary" id="authMainBtn" onclick="doLogin()">ログイン</button>
+      <button class="btn-secondary" id="authSubBtn" onclick="doSignup()">あたらしく はじめる（無料）</button>
+      <div id="authMsg" class="auth-msg" style="display:none;"></div>
     </div>
   </div>
 </div>
@@ -149,9 +155,7 @@ body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;backgrou
       <button class="kb" onclick="setKb(this,1)">😢</button>
     </div>
     <input class="hitokoto" placeholder="ひとこと（じぶんで かいてみよう）" id="htk">
-    <div style="text-align:right;margin-top:6px;">
-      <button onclick="resetSetup()" style="background:none;border:none;color:#ddb090;font-size:10px;text-decoration:underline;cursor:pointer;font-family:inherit;">⚙️ せっていを かえる</button>
-    </div>
+    <div><button class="logout-btn" onclick="doLogout()">⚙️ ログアウト</button></div>
   </div>
 
   <div class="tabs">
@@ -160,6 +164,7 @@ body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;backgrou
     <button class="tab" onclick="pg('support',this)">サポート</button>
     <button class="tab" onclick="pg('kiroku',this)">きろく</button>
   </div>
+
   <!-- よてい -->
   <div class="pg on" id="pg-yotei">
     <div class="card">
@@ -197,14 +202,14 @@ body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;backgrou
       <div style="font-size:11px;color:#c08050;margin-bottom:6px;">できたら ⭐ まあまあは ○ むずかしかったは △</div>
       <table class="check-tbl">
         <tr><th style="text-align:left;width:55%">やること</th><th>⭐</th><th>○</th><th>△</th></tr>
-        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">⏰</span>おきる・ねじかん</td><td><button class="cb" onclick="ck('c1','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c1','o',this)">○</button></td><td><button class="cb" onclick="ck('c1','h',this)">△</button></td></tr>
-        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">🍙</span>ごはんを たべた</td><td><button class="cb" onclick="ck('c2','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c2','o',this)">○</button></td><td><button class="cb" onclick="ck('c2','h',this)">△</button></td></tr>
-        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">🪥</span>はみがき・おきがえ</td><td><button class="cb" onclick="ck('c3','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c3','o',this)">○</button></td><td><button class="cb" onclick="ck('c3','h',this)">△</button></td></tr>
-        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">📋</span>やることを かくにん</td><td><button class="cb" onclick="ck('c4','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c4','o',this)">○</button></td><td><button class="cb" onclick="ck('c4','h',this)">△</button></td></tr>
-        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">💬</span>おはなし・やりとり</td><td><button class="cb" onclick="ck('c5','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c5','o',this)">○</button></td><td><button class="cb" onclick="ck('c5','h',this)">△</button></td></tr>
-        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">💗</span>きもちを つたえた</td><td><button class="cb" onclick="ck('c6','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c6','o',this)">○</button></td><td><button class="cb" onclick="ck('c6','h',this)">△</button></td></tr>
-        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">⭐</span>がんばった・できた</td><td><button class="cb" onclick="ck('c7','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c7','o',this)">○</button></td><td><button class="cb" onclick="ck('c7','h',this)">△</button></td></tr>
-        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">😴</span>リラックスできた</td><td><button class="cb" onclick="ck('c8','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c8','o',this)">○</button></td><td><button class="cb" onclick="ck('c8','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">⏰</span>おきる・ねじかん</td><td><button class="cb" onclick="ck('c1','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c1','o',this)">○</button></td><td><button class="cb" onclick="ck('c1','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">🍙</span>ごはんを たべた</td><td><button class="cb" onclick="ck('c2','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c2','o',this)">○</button></td><td><button class="cb" onclick="ck('c2','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">🪥</span>はみがき・おきがえ</td><td><button class="cb" onclick="ck('c3','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c3','o',this)">○</button></td><td><button class="cb" onclick="ck('c3','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">📋</span>やることを かくにん</td><td><button class="cb" onclick="ck('c4','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c4','o',this)">○</button></td><td><button class="cb" onclick="ck('c4','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">💬</span>おはなし・やりとり</td><td><button class="cb" onclick="ck('c5','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c5','o',this)">○</button></td><td><button class="cb" onclick="ck('c5','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">💗</span>きもちを つたえた</td><td><button class="cb" onclick="ck('c6','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c6','o',this)">○</button></td><td><button class="cb" onclick="ck('c6','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">⭐</span>がんばった・できた</td><td><button class="cb" onclick="ck('c7','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c7','o',this)">○</button></td><td><button class="cb" onclick="ck('c7','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">😴</span>リラックスできた</td><td><button class="cb" onclick="ck('c8','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c8','o',this)">○</button></td><td><button class="cb" onclick="ck('c8','h',this)">△</button></td></tr>
       </table>
     </div>
     <div class="card">
@@ -229,36 +234,20 @@ body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;backgrou
       </div>
       <div style="font-size:10px;color:#c08050;text-align:center;margin-top:6px;">※ルールは おうちで じゆうに きめてね♪</div>
     </div>
-
-    <!-- ふりかえり -->
     <div class="card card-green">
       <div class="sec-title">🍀 きょうの ふりかえり</div>
       <div style="font-size:11px;color:#70a060;margin-bottom:8px;">いっしょに かいてみよう！</div>
       <div class="furi-grid">
-        <div class="furi-box">
-          <div class="furi-lbl">⭐ じぶんで<br>たのしかった・うれしかった</div>
-          <textarea class="furi-ta" id="f1" placeholder="かいてみよう..."></textarea>
-        </div>
-        <div class="furi-box">
-          <div class="furi-lbl">⭐ おうちのひとから<br>よかったところ</div>
-          <textarea class="furi-ta" id="f2" placeholder="かいてみよう..."></textarea>
-        </div>
-        <div class="furi-box">
-          <div class="furi-lbl">がんばったこと</div>
-          <textarea class="furi-ta" id="f3" placeholder="かいてみよう..."></textarea>
-        </div>
-        <div class="furi-box">
-          <div class="furi-lbl">あしたに いかしたいこと</div>
-          <textarea class="furi-ta" id="f4" placeholder="かいてみよう..."></textarea>
-        </div>
+        <div class="furi-box"><div class="furi-lbl">⭐ じぶんで<br>たのしかった・うれしかった</div><textarea class="furi-ta" id="f1" placeholder="かいてみよう..."></textarea></div>
+        <div class="furi-box"><div class="furi-lbl">⭐ おうちのひとから<br>よかったところ</div><textarea class="furi-ta" id="f2" placeholder="かいてみよう..."></textarea></div>
+        <div class="furi-box"><div class="furi-lbl">がんばったこと</div><textarea class="furi-ta" id="f3" placeholder="かいてみよう..."></textarea></div>
+        <div class="furi-box"><div class="furi-lbl">あしたに いかしたいこと</div><textarea class="furi-ta" id="f4" placeholder="かいてみよう..."></textarea></div>
       </div>
     </div>
-
     <div class="okusuri">
       <div style="font-size:24px;margin-bottom:4px;">🐹</div>
       <div class="oku-txt">ぜんぶ できなくても だいじょうぶ！<br>できたことが ひとつ あれば 100てん！<br>きょうも えらい！ すてきな いちにちだったね♪</div>
     </div>
-
   </div>
 
   <!-- サポート -->
@@ -272,7 +261,6 @@ body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;backgrou
       <div class="support-item"><div class="schk" onclick="togS(this)"></div><span style="font-size:12px;color:#5a3a1a;">えらぶことを へらした</span></div>
       <div class="support-item"><div class="schk" onclick="togS(this)"></div><span style="font-size:12px;color:#5a3a1a;">いっしょに やった・よりそった</span></div>
       <div class="support-item"><div class="schk" onclick="togS(this)"></div><span style="font-size:12px;color:#5a3a1a;">こまめに ほめた・みとめた</span></div>
-      <div style="font-size:11px;color:#c08050;margin-top:6px;">その他：<input class="txt-input" style="width:70%;display:inline;" placeholder="かいてね"></div>
     </div>
     <div class="card card-blue">
       <div class="sec-title">💙 しんどくなったサイン</div>
@@ -292,42 +280,69 @@ body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;backgrou
   <div class="pg" id="pg-kiroku">
     <div class="card">
       <div class="sec-title">📅 かこの きろく</div>
-      <div id="historyList">
-        <div style="text-align:center;color:#c08050;font-size:13px;padding:20px;">よみこんでいます...</div>
-      </div>
+      <div id="historyList"><div class="loading">よみこんでいます...</div></div>
     </div>
   </div>
 
   <div id="saveMsg" class="msg">きろくを ほぞんしました！🎉</div>
   <button class="save-btn" onclick="saveRecord()">💾 きょうの きろくを ほぞんする</button>
-
 </div>
 
 <script>
+// ★ここにあなたのSupabase情報を入れてください★
+var SUPABASE_URL = 'https://ksgfvumowjejopatdllx.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_azXNrBs-oHWRlNShIkvSww_ySiyddau';
+
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var stickers=[];
 var checks={};
 var kibunVal=0;
+var currentUser=null;
 
-function init(){
-  var url=localStorage.getItem('sb_url');
-  var key=localStorage.getItem('sb_key');
-  if(!url||!key){
-    document.getElementById('setupScreen').style.display='block';
+async function init(){
+  var {data:{session}}=await sb.auth.getSession();
+  if(session){
+    currentUser=session.user;
+    showMain();
   } else {
-    document.getElementById('mainApp').style.display='block';
-    document.getElementById('dt').valueAsDate=new Date();
+    document.getElementById('authScreen').style.display='block';
   }
 }
 
-function saveSetup(){
-  var url=document.getElementById('setupUrl').value.trim();
-  var key=document.getElementById('setupKey').value.trim();
-  if(!url||!key){alert('URLとキーを にゅうりょくしてね！');return;}
-  localStorage.setItem('sb_url',url);
-  localStorage.setItem('sb_key',key);
-  document.getElementById('setupScreen').style.display='none';
+function showMain(){
+  document.getElementById('authScreen').style.display='none';
   document.getElementById('mainApp').style.display='block';
   document.getElementById('dt').valueAsDate=new Date();
+}
+
+async function doSignup(){
+  var email=document.getElementById('authEmail').value.trim();
+  var pass=document.getElementById('authPassword').value;
+  if(!email||!pass){showAuthMsg('メールとパスワードを にゅうりょくしてね','err');return;}
+  var {data,error}=await sb.auth.signUp({email,password:pass});
+  if(error){showAuthMsg('エラー：'+error.message,'err');}
+  else{showAuthMsg('かくにんメールを おくりました！メールを チェックしてね📧','ok');}
+}
+
+async function doLogin(){
+  var email=document.getElementById('authEmail').value.trim();
+  var pass=document.getElementById('authPassword').value;
+  if(!email||!pass){showAuthMsg('メールとパスワードを にゅうりょくしてね','err');return;}
+  var {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){showAuthMsg('ログインできませんでした。メールとパスワードを かくにんしてね','err');}
+  else{currentUser=data.user;showMain();}
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  location.reload();
+}
+
+function showAuthMsg(msg,type){
+  var el=document.getElementById('authMsg');
+  el.textContent=msg;
+  el.className='auth-msg '+type;
+  el.style.display='block';
 }
 
 function pg(id,btn){
@@ -369,66 +384,36 @@ function renderS(){
 }
 
 async function saveRecord(){
-  var url=localStorage.getItem('sb_url');
-  var key=localStorage.getItem('sb_key');
+  if(!currentUser){return;}
   var data={
+    user_id: currentUser.id,
     date: document.getElementById('dt').value,
     kibun: kibunVal,
     checks: JSON.stringify(checks),
     memo: document.getElementById('htk').value
   };
-  try{
-    var res=await fetch(url+'/rest/v1/records',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'apikey':key,
-        'Authorization':'Bearer '+key,
-        'Prefer':'return=minimal'
-      },
-      body:JSON.stringify(data)
-    });
-    if(res.ok||res.status===201){
-      var msg=document.getElementById('saveMsg');
-      msg.style.display='block';
-      setTimeout(function(){msg.style.display='none';},3000);
-    } else {
-      var err=await res.text();
-      alert('エラーが おきました：'+err);
-    }
-  } catch(e){
-    alert('つながりませんでした。URLとキーを かくにんしてね。');
+  var {error}=await sb.from('records').upsert(data,{onConflict:'user_id,date'});
+  if(!error){
+    var msg=document.getElementById('saveMsg');
+    msg.style.display='block';
+    setTimeout(function(){msg.style.display='none';},3000);
+  } else {
+    alert('エラーが おきました：'+error.message);
   }
 }
 
 async function loadHistory(){
-  var url=localStorage.getItem('sb_url');
-  var key=localStorage.getItem('sb_key');
+  if(!currentUser){return;}
   var list=document.getElementById('historyList');
-  try{
-    var res=await fetch(url+'/rest/v1/records?order=date.desc&limit=20',{
-      headers:{
-        'apikey':key,
-        'Authorization':'Bearer '+key
-      }
-    });
-    if(!res.ok){list.innerHTML='<div style="text-align:center;color:#e06060;font-size:13px;padding:20px;">よみこめませんでした😢<br>せっていを かくにんしてね</div>';return;}
-    var records=await res.json();
-    if(!records.length){list.innerHTML='<div style="text-align:center;color:#c08050;font-size:13px;padding:20px;">まだ きろくが ありません🐹<br>チェックして ほぞんしてね！</div>';return;}
-    var kibunEmoji=['','😢','😟','😐','🙂','😄'];
-    list.innerHTML=records.map(function(r){
-      var ck=JSON.parse(r.checks||'{}');
-      var done=Object.values(ck).filter(function(v){return v==='d';}).length;
-      return '<div class="history-item"><div class="hi-date">📅 '+r.date+'</div><div class="hi-kibun">'+(kibunEmoji[r.kibun]||'')+'</div><div class="hi-checks">できた：'+done+' こ / 8こ</div>'+(r.memo?'<div style="font-size:11px;color:#8a6a4a;margin-top:2px;">💬 '+r.memo+'</div>':'')+'</div>';
-    }).join('');
-  } catch(e){
-    list.innerHTML='<div style="text-align:center;color:#e06060;font-size:13px;padding:20px;">エラーが おきました😢</div>';
-  }
-}
-
-function resetSetup(){
-  localStorage.clear();
-  location.reload();
+  var {data,error}=await sb.from('records').select('*').eq('user_id',currentUser.id).order('date',{ascending:false}).limit(20);
+  if(error||!data){list.innerHTML='<div class="loading">よみこめませんでした😢</div>';return;}
+  if(!data.length){list.innerHTML='<div class="loading">まだ きろくが ありません🐹<br>チェックして ほぞんしてね！</div>';return;}
+  var kibunEmoji=['','😢','😟','😐','🙂','😄'];
+  list.innerHTML=data.map(function(r){
+    var ck=JSON.parse(r.checks||'{}');
+    var done=Object.values(ck).filter(function(v){return v==='d';}).length;
+    return '<div class="history-item"><div class="hi-date">📅 '+r.date+' '+( kibunEmoji[r.kibun]||'')+'</div><div style="font-size:11px;color:#c08050;">できた：'+done+' こ / 8こ</div>'+(r.memo?'<div style="font-size:11px;color:#8a6a4a;margin-top:2px;">💬 '+r.memo+'</div>':'')+'</div>';
+  }).join('');
 }
 
 init();
