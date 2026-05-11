@@ -320,7 +320,10 @@ async function doSignup(){
   var email=document.getElementById('authEmail').value.trim();
   var pass=document.getElementById('authPassword').value;
   if(!email||!pass){showAuthMsg('メールとパスワードを にゅうりょくしてね','err');return;}
-  var {data,error}=await sb.auth.signUp({email,password:pass});
+  var {data,error}=await sb.auth.signUp({email,password:pass,
+    options:{
+      emailRedirectTo:'https://sasakama0.github.io/hamster-checklist/'
+    }});
   if(error){showAuthMsg('エラー：'+error.message,'err');}
   else{showAuthMsg('かくにんメールを おくりました！メールを チェックしてね📧','ok');}
 }
