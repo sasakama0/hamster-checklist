@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>きょうのプロフィール帳チェックリスト</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.0/supabase.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;background:#fff8f0;min-height:100vh;}
@@ -291,9 +291,10 @@ body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;backgrou
 <script>
 // ★ここにあなたのSupabase情報を入れてください★
 var SUPABASE_URL = 'https://ksgfvumowjejopatdllx.supabase.co';
-var SUPABASE_KEY = 'sb_publishable_azXNrBs-oHWRlNShIkvSww_ySiyddau';
+var SUPABASE_KEY = 'PUBLISHABLE_KEY_HERE';
 
-var sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 var stickers=[];
 var checks={};
 var kibunVal=0;
