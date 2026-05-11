@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>きょうのプロフィール帳チェックリスト</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;background:#fff8f0;min-height:100vh;}
+.app{padding:10px;max-width:480px;margin:0 auto;}
+
+/* Setup screen */
+.setup{background:#fff;border-radius:16px;border:2px solid #ffd9a0;padding:20px;margin:20px auto;max-width:400px;}
+.setup h2{font-size:16px;color:#7a4a2a;margin-bottom:6px;text-align:center;}
+.setup p{font-size:12px;color:#c08050;margin-bottom:16px;text-align:center;line-height:1.6;}
+.setup label{font-size:12px;color:#8a5a2a;display:block;margin-bottom:4px;font-weight:700;}
+.setup input{width:100%;border:1.5px solid #ffddb0;border-radius:8px;padding:8px 10px;font-size:13px;color:#5a3a1a;margin-bottom:12px;outline:none;font-family:inherit;}
+.setup input:focus{border-color:#ffb347;}
+.btn-primary{width:100%;background:#ffb347;color:white;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-primary:active{background:#e89820;}
+.ham-big{text-align:center;font-size:48px;margin-bottom:10px;}
+
+/* Header */
+.header-wrap{background:#fff;border-radius:16px;border:2px solid #ffd9a0;padding:12px;margin-bottom:10px;text-align:center;}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.date-box{background:#fff8f0;border:1px solid #ffddb0;border-radius:8px;padding:4px 8px;font-size:11px;color:#b08060;}
+.date-box input{border:none;background:transparent;font-size:11px;color:#8a5a2a;outline:none;font-family:inherit;width:110px;}
+.main-title{font-size:17px;font-weight:700;color:#7a4a2a;line-height:1.4;}
+.ribbon{background:#ff9ec4;color:white;font-size:11px;font-weight:700;padding:4px 16px;border-radius:20px;display:inline-block;margin-top:6px;}
+.kibun-label{font-size:12px;color:#b08060;margin:8px 0 4px;}
+.kibun-row{display:flex;justify-content:center;gap:8px;}
+.kb{width:40px;height:40px;border-radius:50%;border:2px solid #ffddb0;background:#fff9f0;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.15s,background 0.15s;}
+.kb.sel{background:#ffd9a0;border-color:#e8a040;transform:scale(1.18);}
+.hitokoto{width:100%;border:none;border-bottom:1.5px dashed #ffddb0;background:transparent;font-size:12px;color:#7a4a2a;outline:none;margin-top:6px;padding:4px 2px;font-family:inherit;}
+
+/* Tabs */
+.tabs{display:flex;border-radius:12px;overflow:hidden;border:2px solid #ffd9a0;margin-bottom:10px;}
+.tab{flex:1;padding:9px 2px;text-align:center;font-size:11px;font-weight:700;color:#c08050;background:#fff9f0;cursor:pointer;border:none;font-family:inherit;}
+.tab.on{background:#ffb347;color:white;}
+.pg{display:none;}
+.pg.on{display:block;}
+
+/* Cards */
+.card{background:#fff;border-radius:16px;border:2px solid #ffd9a0;padding:12px;margin-bottom:10px;}
+.card-pink{border-color:#ffb3cc;background:#fff9fb;}
+.card-green{border-color:#b8e6b0;background:#f6fff4;}
+.card-blue{border-color:#b0d4f5;background:#f4f9ff;}
+.card-yellow{border-color:#ffe066;background:#fffdf0;}
+.sec-title{font-size:14px;font-weight:700;color:#7a4a2a;display:flex;align-items:center;gap:5px;margin-bottom:8px;}
+
+/* Yotei */
+.yotei-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed #ffddb0;}
+.yotei-row:last-child{border-bottom:none;}
+.yotei-input{flex:1;border:none;border-bottom:1px dashed #ffcca0;background:transparent;font-size:13px;color:#5a3a1a;outline:none;font-family:inherit;padding:2px 0;}
+.mission-row{display:flex;align-items:center;gap:8px;background:#fff9f0;border-radius:10px;padding:8px 10px;border:1.5px solid #ffddb0;margin-bottom:6px;}
+.mn{width:24px;height:24px;border-radius:50%;background:#ffb347;color:white;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mi{flex:1;border:none;background:transparent;font-size:13px;color:#5a3a1a;outline:none;font-family:inherit;}
+.style-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}
+.style-btn{padding:8px 4px;border-radius:10px;border:1.5px solid #ffddb0;background:#fff9f0;font-size:12px;color:#7a4a2a;cursor:pointer;font-family:inherit;}
+.style-btn.on{background:#ffd9a0;border-color:#e8a040;font-weight:700;}
+
+/* Check */
+.check-tbl{width:100%;border-collapse:collapse;}
+.check-tbl th{font-size:11px;color:#c08050;padding:4px 2px;border-bottom:1.5px solid #ffddb0;text-align:center;}
+.check-tbl th:first-child{text-align:left;}
+.check-tbl td{padding:6px 3px;border-bottom:1px dashed #fff0e0;vertical-align:middle;}
+.cl{font-size:12px;color:#5a3a1a;display:flex;align-items:center;gap:5px;}
+.cb{width:30px;height:30px;border-radius:8px;border:1.5px solid #ffddb0;background:#fff9f0;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.cb.d{background:#ffe566;border-color:#d4a800;}
+.cb.o{background:#c8f0a0;border-color:#60b020;}
+.cb.h{background:#ffcccc;border-color:#e06060;}
+
+/* Sticker */
+.stk-choices{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.sc{font-size:24px;cursor:pointer;padding:3px;border-radius:8px;}
+.sticker-area{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;padding:6px;background:#fff9f0;border-radius:10px;border:1.5px dashed #ffddb0;margin-bottom:8px;}
+.stk{font-size:24px;animation:pop .25s ease;}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.prog-wrap{background:#ffddb0;border-radius:10px;height:14px;margin:6px 0;overflow:hidden;}
+.prog-fill{background:#ffb347;height:100%;border-radius:10px;transition:width 0.4s;}
+.reward-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;}
+.rw-box{background:#fff9f0;border-radius:10px;padding:8px 4px;text-align:center;border:1.5px dashed #ffddb0;}
+.rw-lbl{font-size:10px;color:#c08050;margin-bottom:3px;}
+.rw-ico{font-size:22px;}
+.rw-txt{font-size:10px;color:#c08050;margin-top:2px;line-height:1.3;}
+
+/* Support */
+.support-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed #ffddb0;}
+.support-item:last-child{border-bottom:none;}
+.schk{width:20px;height:20px;border-radius:4px;border:1.5px solid #ffddb0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.schk.on{background:#b0e0ff;border-color:#60a0e0;}
+.sign-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0;}
+.sign-btn{padding:7px 4px;border-radius:10px;border:1.5px solid #b0d4f5;background:#f4f9ff;font-size:12px;color:#3a6a9a;cursor:pointer;font-family:inherit;text-align:center;}
+.sign-btn.on{background:#b0d4f5;font-weight:700;}
+
+/* Furikaeri */
+.furi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.furi-box{background:#fff9f0;border-radius:10px;padding:8px;border:1.5px solid #ffddb0;}
+.furi-lbl{font-size:10px;color:#c08050;font-weight:700;margin-bottom:4px;}
+.furi-ta{width:100%;border:none;background:transparent;font-size:12px;color:#5a3a1a;resize:none;outline:none;font-family:inherit;min-height:48px;line-height:1.5;}
+.okusuri{background:#fff8e8;border-radius:14px;padding:12px;text-align:center;border:1.5px solid #ffe066;margin-bottom:10px;}
+.oku-txt{font-size:12px;color:#8a5a2a;line-height:1.7;}
+
+/* History */
+.history-item{background:#fff9f0;border-radius:10px;padding:10px;border:1.5px solid #ffddb0;margin-bottom:8px;}
+.hi-date{font-size:12px;font-weight:700;color:#8a5a2a;margin-bottom:4px;}
+.hi-kibun{font-size:18px;}
+.hi-checks{font-size:11px;color:#c08050;margin-top:4px;}
+.save-btn{width:100%;background:#ff9ec4;color:white;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.save-btn:active{background:#e07090;}
+.msg{text-align:center;font-size:13px;color:#60a860;font-weight:700;padding:8px;background:#f0fff0;border-radius:8px;margin-bottom:8px;display:none;}
+.txt-input{width:100%;border:1.5px solid #ffddb0;border-radius:8px;padding:6px 10px;font-size:12px;color:#5a3a1a;outline:none;font-family:inherit;margin-top:4px;}
+</style>
+</head>
+<body>
+
+<!-- Setup Screen -->
+<div id="setupScreen" class="app" style="display:none;">
+  <div class="setup">
+    <div class="ham-big">🐹</div>
+    <h2>はじめの せってい</h2>
+    <p>Supabaseの じょうほうを にゅうりょくしてね！<br>いちどだけ でいいよ♪</p>
+    <label>Supabase URL</label>
+    <input type="text" id="setupUrl" placeholder="https://xxxx.supabase.co">
+    <label>Publishable Key</label>
+    <input type="text" id="setupKey" placeholder="sb_publishable_...">
+    <button class="btn-primary" onclick="saveSetup()">せってい かんりょう！</button>
+    <div style="text-align:center;margin-top:12px;">
+      <button onclick="resetSetup()" style="background:none;border:none;color:#c08050;font-size:12px;text-decoration:underline;cursor:pointer;font-family:inherit;">せっていを リセットする</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="mainApp" class="app" style="display:none;">
+  <div class="header-wrap">
+    <div class="header-top">
+      <div class="date-box">ひづけ：<input type="date" id="dt"></div>
+      <div style="font-size:28px;">🐹</div>
+    </div>
+    <div class="main-title">ASDキッズのための<br>きょうのプロフィール帳<br>チェックリスト</div>
+    <div class="ribbon">いっしょに できた！が ふえる まいにちに♪</div>
+    <div class="kibun-label">🌸 きょうの きぶん</div>
+    <div class="kibun-row">
+      <button class="kb" onclick="setKb(this,5)">😄</button>
+      <button class="kb" onclick="setKb(this,4)">🙂</button>
+      <button class="kb" onclick="setKb(this,3)">😐</button>
+      <button class="kb" onclick="setKb(this,2)">😟</button>
+      <button class="kb" onclick="setKb(this,1)">😢</button>
+    </div>
+    <input class="hitokoto" placeholder="ひとこと（じぶんで かいてみよう）" id="htk">
+    <div style="text-align:right;margin-top:6px;">
+      <button onclick="resetSetup()" style="background:none;border:none;color:#ddb090;font-size:10px;text-decoration:underline;cursor:pointer;font-family:inherit;">⚙️ せっていを かえる</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="pg('yotei',this)">よてい</button>
+    <button class="tab" onclick="pg('check',this)">チェック</button>
+    <button class="tab" onclick="pg('support',this)">サポート</button>
+    <button class="tab" onclick="pg('kiroku',this)">きろく</button>
+  </div>
+  <!-- よてい -->
+  <div class="pg on" id="pg-yotei">
+    <div class="card">
+      <div class="sec-title">🌿 きょうの よてい（みどおし）</div>
+      <div class="yotei-row"><span style="font-size:18px;width:24px;text-align:center;">☀️</span><input class="yotei-input" placeholder="あさ" id="y1"></div>
+      <div class="yotei-row"><span style="font-size:18px;width:24px;text-align:center;">⛅</span><input class="yotei-input" placeholder="ひる" id="y2"></div>
+      <div class="yotei-row"><span style="font-size:18px;width:24px;text-align:center;">🌙</span><input class="yotei-input" placeholder="よる" id="y3"></div>
+      <div style="font-size:10px;color:#c08050;margin-top:6px;text-align:right;">※えや シールを はっても いいよ！</div>
+    </div>
+    <div class="card card-yellow">
+      <div class="sec-title">⭐ きょうの ミッション（3つだけ！）</div>
+      <div class="mission-row"><div class="mn">1</div><input class="mi" placeholder="ここに かいてね" id="m1"></div>
+      <div class="mission-row"><div class="mn">2</div><input class="mi" placeholder="ここに かいてね" id="m2"></div>
+      <div class="mission-row"><div class="mn">3</div><input class="mi" placeholder="ここに かいてね" id="m3"></div>
+      <div style="font-size:10px;color:#c08050;margin-top:6px;text-align:center;">むずかしかったら おうちのひとと きめよう！🐹</div>
+    </div>
+    <div class="card card-pink">
+      <div class="sec-title">💛 じぶんで えらぼう！</div>
+      <div style="font-size:11px;color:#c08050;margin-bottom:6px;">きょうの やりかたを えらんで タップしてね</div>
+      <div class="style-grid">
+        <button class="style-btn" onclick="tog(this)">🏠 ひとりで やる</button>
+        <button class="style-btn" onclick="tog(this)">👫 いっしょに やる</button>
+        <button class="style-btn" onclick="tog(this)">🔇 しずかな ばしょ</button>
+        <button class="style-btn" onclick="tog(this)">🎵 おとがある ばしょ</button>
+        <button class="style-btn" onclick="tog(this)">⚡ すぐに やる</button>
+        <button class="style-btn" onclick="tog(this)">⏰ あとで やる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- チェック -->
+  <div class="pg" id="pg-check">
+    <div class="card card-pink">
+      <div class="sec-title">🌸 できたかな？チェック</div>
+      <div style="font-size:11px;color:#c08050;margin-bottom:6px;">できたら ⭐ まあまあは ○ むずかしかったは △</div>
+      <table class="check-tbl">
+        <tr><th style="text-align:left;width:55%">やること</th><th>⭐</th><th>○</th><th>△</th></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">⏰</span>おきる・ねじかん</td><td><button class="cb" onclick="ck('c1','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c1','o',this)">○</button></td><td><button class="cb" onclick="ck('c1','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">🍙</span>ごはんを たべた</td><td><button class="cb" onclick="ck('c2','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c2','o',this)">○</button></td><td><button class="cb" onclick="ck('c2','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">🪥</span>はみがき・おきがえ</td><td><button class="cb" onclick="ck('c3','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c3','o',this)">○</button></td><td><button class="cb" onclick="ck('c3','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">📋</span>やることを かくにん</td><td><button class="cb" onclick="ck('c4','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c4','o',this)">○</button></td><td><button class="cb" onclick="ck('c4','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">💬</span>おはなし・やりとり</td><td><button class="cb" onclick="ck('c5','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c5','o',this)">○</button></td><td><button class="cb" onclick="ck('c5','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">💗</span>きもちを つたえた</td><td><button class="cb" onclick="ck('c6','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c6','o',this)">○</button></td><td><button class="cb" onclick="ck('c6','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">⭐</span>がんばった・できた</td><td><button class="cb" onclick="ck('c7','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c7','o',this)">○</button></td><td><button class="cb" onclick="ck('c7','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;text-align:center;">😴</span>リラックスできた</td><td><button class="cb" onclick="ck('c8','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c8','o',this)">○</button></td><td><button class="cb" onclick="ck('c8','h',this)">△</button></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="sec-title">⭐ シールを あつめよう！</div>
+      <div class="stk-choices">
+        <span class="sc" onclick="addS('⭐')">⭐</span>
+        <span class="sc" onclick="addS('🌟')">🌟</span>
+        <span class="sc" onclick="addS('💛')">💛</span>
+        <span class="sc" onclick="addS('🌸')">🌸</span>
+        <span class="sc" onclick="addS('🐹')">🐹</span>
+        <span class="sc" onclick="addS('🎉')">🎉</span>
+        <span class="sc" onclick="addS('🍀')">🍀</span>
+        <span class="sc" onclick="addS('🌈')">🌈</span>
+      </div>
+      <div class="sticker-area" id="sa"></div>
+      <div style="font-size:13px;text-align:center;color:#e87820;font-weight:700;margin:4px 0;" id="sc2">0 こ</div>
+      <div class="prog-wrap"><div class="prog-fill" id="pf" style="width:0%"></div></div>
+      <div class="reward-grid">
+        <div class="rw-box"><div class="rw-lbl">3こ</div><div class="rw-ico">🎁</div><div class="rw-txt">ちいさな<br>ごほうび</div></div>
+        <div class="rw-box"><div class="rw-lbl">5こ</div><div class="rw-ico">⭐</div><div class="rw-txt">すきな<br>あそび</div></div>
+        <div class="rw-box"><div class="rw-lbl">7こ</div><div class="rw-ico">👑</div><div class="rw-txt">スペシャル<br>ごほうび！</div></div>
+      </div>
+      <div style="font-size:10px;color:#c08050;text-align:center;margin-top:6px;">※ルールは おうちで じゆうに きめてね♪</div>
+    </div>
+
+    <!-- ふりかえり -->
+    <div class="card card-green">
+      <div class="sec-title">🍀 きょうの ふりかえり</div>
+      <div style="font-size:11px;color:#70a060;margin-bottom:8px;">いっしょに かいてみよう！</div>
+      <div class="furi-grid">
+        <div class="furi-box">
+          <div class="furi-lbl">⭐ じぶんで<br>たのしかった・うれしかった</div>
+          <textarea class="furi-ta" id="f1" placeholder="かいてみよう..."></textarea>
+        </div>
+        <div class="furi-box">
+          <div class="furi-lbl">⭐ おうちのひとから<br>よかったところ</div>
+          <textarea class="furi-ta" id="f2" placeholder="かいてみよう..."></textarea>
+        </div>
+        <div class="furi-box">
+          <div class="furi-lbl">がんばったこと</div>
+          <textarea class="furi-ta" id="f3" placeholder="かいてみよう..."></textarea>
+        </div>
+        <div class="furi-box">
+          <div class="furi-lbl">あしたに いかしたいこと</div>
+          <textarea class="furi-ta" id="f4" placeholder="かいてみよう..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="okusuri">
+      <div style="font-size:24px;margin-bottom:4px;">🐹</div>
+      <div class="oku-txt">ぜんぶ できなくても だいじょうぶ！<br>できたことが ひとつ あれば 100てん！<br>きょうも えらい！ すてきな いちにちだったね♪</div>
+    </div>
+
+  </div>
+
+  <!-- サポート -->
+  <div class="pg" id="pg-support">
+    <div class="card card-pink">
+      <div class="sec-title">💗 おうちのひと サポートメモ</div>
+      <div style="font-size:11px;color:#c08050;margin-bottom:8px;">きょうは これが あると たすかった！</div>
+      <div class="support-item"><div class="schk" onclick="togS(this)"></div><span style="font-size:12px;color:#5a3a1a;">よていを みえるように した</span></div>
+      <div class="support-item"><div class="schk" onclick="togS(this)"></div><span style="font-size:12px;color:#5a3a1a;">やることを ひとつずつにした</span></div>
+      <div class="support-item"><div class="schk" onclick="togS(this)"></div><span style="font-size:12px;color:#5a3a1a;">しずかな かんきょうを つくった</span></div>
+      <div class="support-item"><div class="schk" onclick="togS(this)"></div><span style="font-size:12px;color:#5a3a1a;">えらぶことを へらした</span></div>
+      <div class="support-item"><div class="schk" onclick="togS(this)"></div><span style="font-size:12px;color:#5a3a1a;">いっしょに やった・よりそった</span></div>
+      <div class="support-item"><div class="schk" onclick="togS(this)"></div><span style="font-size:12px;color:#5a3a1a;">こまめに ほめた・みとめた</span></div>
+      <div style="font-size:11px;color:#c08050;margin-top:6px;">その他：<input class="txt-input" style="width:70%;display:inline;" placeholder="かいてね"></div>
+    </div>
+    <div class="card card-blue">
+      <div class="sec-title">💙 しんどくなったサイン</div>
+      <div style="font-size:11px;color:#6090c0;margin-bottom:8px;">あてはまるものに タップしてね</div>
+      <div class="sign-grid">
+        <button class="sign-btn" onclick="tog(this)">😤 イライラ</button>
+        <button class="sign-btn" onclick="tog(this)">😔 おちつかない</button>
+        <button class="sign-btn" onclick="tog(this)">😬 かたまる</button>
+        <button class="sign-btn" onclick="tog(this)">😭 なく・おこる</button>
+      </div>
+      <div style="font-size:11px;color:#6090c0;margin-top:6px;">そのとき してみたこと：</div>
+      <input class="txt-input" placeholder="かいてみよう">
+    </div>
+  </div>
+
+  <!-- きろく -->
+  <div class="pg" id="pg-kiroku">
+    <div class="card">
+      <div class="sec-title">📅 かこの きろく</div>
+      <div id="historyList">
+        <div style="text-align:center;color:#c08050;font-size:13px;padding:20px;">よみこんでいます...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="saveMsg" class="msg">きろくを ほぞんしました！🎉</div>
+  <button class="save-btn" onclick="saveRecord()">💾 きょうの きろくを ほぞんする</button>
+
+</div>
+
+<script>
+var stickers=[];
+var checks={};
+var kibunVal=0;
+
+function init(){
+  var url=localStorage.getItem('sb_url');
+  var key=localStorage.getItem('sb_key');
+  if(!url||!key){
+    document.getElementById('setupScreen').style.display='block';
+  } else {
+    document.getElementById('mainApp').style.display='block';
+    document.getElementById('dt').valueAsDate=new Date();
+  }
+}
+
+function saveSetup(){
+  var url=document.getElementById('setupUrl').value.trim();
+  var key=document.getElementById('setupKey').value.trim();
+  if(!url||!key){alert('URLとキーを にゅうりょくしてね！');return;}
+  localStorage.setItem('sb_url',url);
+  localStorage.setItem('sb_key',key);
+  document.getElementById('setupScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  document.getElementById('dt').valueAsDate=new Date();
+}
+
+function pg(id,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='kiroku') loadHistory();
+}
+
+function setKb(btn,v){
+  document.querySelectorAll('.kb').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  kibunVal=v;
+}
+
+function tog(btn){btn.classList.toggle('on');}
+function togS(el){el.classList.toggle('on');el.textContent=el.classList.contains('on')?'✓':'';}
+
+function ck(id,type,btn){
+  var row=btn.closest('tr');
+  var btns=row.querySelectorAll('.cb');
+  if(checks[id]===type){btn.classList.remove(type);checks[id]=null;}
+  else{
+    btns.forEach(function(b){b.classList.remove('d','o','h');});
+    btn.classList.add(type);checks[id]=type;
+    if(type==='d') addS('⭐');
+  }
+}
+
+function addS(s){stickers.push(s);renderS();}
+function renderS(){
+  var a=document.getElementById('sa');
+  a.innerHTML='';
+  stickers.forEach(function(s){var sp=document.createElement('span');sp.className='stk';sp.textContent=s;a.appendChild(sp);});
+  var n=stickers.length;
+  document.getElementById('sc2').textContent=n+' こ';
+  document.getElementById('pf').style.width=Math.min(Math.round(n/7*100),100)+'%';
+}
+
+async function saveRecord(){
+  var url=localStorage.getItem('sb_url');
+  var key=localStorage.getItem('sb_key');
+  var data={
+    date: document.getElementById('dt').value,
+    kibun: kibunVal,
+    checks: JSON.stringify(checks),
+    memo: document.getElementById('htk').value
+  };
+  try{
+    var res=await fetch(url+'/rest/v1/records',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':key,
+        'Authorization':'Bearer '+key,
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify(data)
+    });
+    if(res.ok||res.status===201){
+      var msg=document.getElementById('saveMsg');
+      msg.style.display='block';
+      setTimeout(function(){msg.style.display='none';},3000);
+    } else {
+      var err=await res.text();
+      alert('エラーが おきました：'+err);
+    }
+  } catch(e){
+    alert('つながりませんでした。URLとキーを かくにんしてね。');
+  }
+}
+
+async function loadHistory(){
+  var url=localStorage.getItem('sb_url');
+  var key=localStorage.getItem('sb_key');
+  var list=document.getElementById('historyList');
+  try{
+    var res=await fetch(url+'/rest/v1/records?order=date.desc&limit=20',{
+      headers:{
+        'apikey':key,
+        'Authorization':'Bearer '+key
+      }
+    });
+    if(!res.ok){list.innerHTML='<div style="text-align:center;color:#e06060;font-size:13px;padding:20px;">よみこめませんでした😢<br>せっていを かくにんしてね</div>';return;}
+    var records=await res.json();
+    if(!records.length){list.innerHTML='<div style="text-align:center;color:#c08050;font-size:13px;padding:20px;">まだ きろくが ありません🐹<br>チェックして ほぞんしてね！</div>';return;}
+    var kibunEmoji=['','😢','😟','😐','🙂','😄'];
+    list.innerHTML=records.map(function(r){
+      var ck=JSON.parse(r.checks||'{}');
+      var done=Object.values(ck).filter(function(v){return v==='d';}).length;
+      return '<div class="history-item"><div class="hi-date">📅 '+r.date+'</div><div class="hi-kibun">'+(kibunEmoji[r.kibun]||'')+'</div><div class="hi-checks">できた：'+done+' こ / 8こ</div>'+(r.memo?'<div style="font-size:11px;color:#8a6a4a;margin-top:2px;">💬 '+r.memo+'</div>':'')+'</div>';
+    }).join('');
+  } catch(e){
+    list.innerHTML='<div style="text-align:center;color:#e06060;font-size:13px;padding:20px;">エラーが おきました😢</div>';
+  }
+}
+
+function resetSetup(){
+  localStorage.clear();
+  location.reload();
+}
+
+init();
+</script>
+</body>
+</html>
