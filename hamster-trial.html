@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>きょうのプロフィール帳チェックリスト【体験版】</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Hiragino Maru Gothic ProN','BIZ UDPGothic',sans-serif;background:#fff8f0;min-height:100vh;}
+.app{padding:10px;max-width:480px;margin:0 auto;}
+.card{background:#fff;border-radius:16px;border:2px solid #ffd9a0;padding:12px;margin-bottom:10px;}
+.card-pink{border-color:#ffb3cc;background:#fff9fb;}
+.card-green{border-color:#b8e6b0;background:#f6fff4;}
+.card-blue{border-color:#b0d4f5;background:#f4f9ff;}
+.card-yellow{border-color:#ffe066;background:#fffdf0;}
+.sec-title{font-size:14px;font-weight:700;color:#7a4a2a;display:flex;align-items:center;gap:5px;margin-bottom:8px;}
+
+/* Trial banner */
+.trial-banner{background:linear-gradient(135deg,#ffb347,#ff9ec4);color:white;border-radius:14px;padding:12px 16px;margin-bottom:10px;text-align:center;}
+.trial-banner h3{font-size:14px;font-weight:700;margin-bottom:4px;}
+.trial-banner p{font-size:11px;opacity:0.9;line-height:1.5;}
+.trial-btn{display:inline-block;background:white;color:#ff7a9a;font-size:13px;font-weight:700;padding:8px 20px;border-radius:20px;margin-top:8px;text-decoration:none;cursor:pointer;border:none;font-family:inherit;}
+
+/* Header */
+.header-wrap{background:#fff;border-radius:16px;border:2px solid #ffd9a0;padding:12px;margin-bottom:10px;text-align:center;}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.date-box{background:#fff8f0;border:1px solid #ffddb0;border-radius:8px;padding:4px 8px;font-size:11px;color:#b08060;}
+.trial-badge{background:#ff9ec4;color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;}
+.main-title{font-size:17px;font-weight:700;color:#7a4a2a;line-height:1.4;}
+.ribbon{background:#ff9ec4;color:white;font-size:11px;font-weight:700;padding:4px 16px;border-radius:20px;display:inline-block;margin-top:6px;}
+.kibun-label{font-size:12px;color:#b08060;margin:8px 0 4px;}
+.kibun-row{display:flex;justify-content:center;gap:8px;}
+.kb{width:40px;height:40px;border-radius:50%;border:2px solid #ffddb0;background:#fff9f0;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.15s,background 0.15s;}
+.kb.sel{background:#ffd9a0;border-color:#e8a040;transform:scale(1.18);}
+.hitokoto{width:100%;border:none;border-bottom:1.5px dashed #ffddb0;background:transparent;font-size:12px;color:#7a4a2a;outline:none;margin-top:6px;padding:4px 2px;font-family:inherit;}
+
+/* Tabs */
+.tabs{display:flex;border-radius:12px;overflow:hidden;border:2px solid #ffd9a0;margin-bottom:10px;}
+.tab{flex:1;padding:9px 2px;text-align:center;font-size:11px;font-weight:700;color:#c08050;background:#fff9f0;cursor:pointer;border:none;font-family:inherit;}
+.tab.on{background:#ffb347;color:white;}
+.pg{display:none;}
+.pg.on{display:block;}
+
+/* Yotei */
+.yotei-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed #ffddb0;}
+.yotei-row:last-child{border-bottom:none;}
+.yotei-input{flex:1;border:none;border-bottom:1px dashed #ffcca0;background:transparent;font-size:13px;color:#5a3a1a;outline:none;font-family:inherit;padding:2px 0;}
+.mission-row{display:flex;align-items:center;gap:8px;background:#fff9f0;border-radius:10px;padding:8px 10px;border:1.5px solid #ffddb0;margin-bottom:6px;}
+.mn{width:24px;height:24px;border-radius:50%;background:#ffb347;color:white;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mi{flex:1;border:none;background:transparent;font-size:13px;color:#5a3a1a;outline:none;font-family:inherit;}
+.style-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}
+.style-btn{padding:8px 4px;border-radius:10px;border:1.5px solid #ffddb0;background:#fff9f0;font-size:12px;color:#7a4a2a;cursor:pointer;font-family:inherit;}
+.style-btn.on{background:#ffd9a0;border-color:#e8a040;font-weight:700;}
+
+/* Check */
+.check-tbl{width:100%;border-collapse:collapse;}
+.check-tbl th{font-size:11px;color:#c08050;padding:4px 2px;border-bottom:1.5px solid #ffddb0;text-align:center;}
+.check-tbl th:first-child{text-align:left;}
+.check-tbl td{padding:6px 3px;border-bottom:1px dashed #fff0e0;vertical-align:middle;}
+.cl{font-size:12px;color:#5a3a1a;display:flex;align-items:center;gap:5px;}
+.cb{width:30px;height:30px;border-radius:8px;border:1.5px solid #ffddb0;background:#fff9f0;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.cb.d{background:#ffe566;border-color:#d4a800;}
+.cb.o{background:#c8f0a0;border-color:#60b020;}
+.cb.h{background:#ffcccc;border-color:#e06060;}
+
+/* Sticker */
+.stk-choices{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.sc{font-size:24px;cursor:pointer;padding:3px;border-radius:8px;}
+.sticker-area{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;padding:6px;background:#fff9f0;border-radius:10px;border:1.5px dashed #ffddb0;margin-bottom:8px;}
+.stk{font-size:24px;animation:pop .25s ease;}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.prog-wrap{background:#ffddb0;border-radius:10px;height:14px;margin:6px 0;overflow:hidden;}
+.prog-fill{background:#ffb347;height:100%;border-radius:10px;transition:width 0.4s;}
+.reward-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;}
+.rw-box{background:#fff9f0;border-radius:10px;padding:8px 4px;text-align:center;border:1.5px dashed #ffddb0;}
+.rw-lbl{font-size:10px;color:#c08050;margin-bottom:3px;}
+.rw-ico{font-size:22px;}
+.rw-txt{font-size:10px;color:#c08050;margin-top:2px;line-height:1.3;}
+
+/* Furikaeri */
+.furi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.furi-box{background:#fff9f0;border-radius:10px;padding:8px;border:1.5px solid #ffddb0;}
+.furi-lbl{font-size:10px;color:#c08050;font-weight:700;margin-bottom:4px;}
+.furi-ta{width:100%;border:none;background:transparent;font-size:12px;color:#5a3a1a;resize:none;outline:none;font-family:inherit;min-height:48px;line-height:1.5;}
+.okusuri{background:#fff8e8;border-radius:14px;padding:12px;text-align:center;border:1.5px solid #ffe066;margin-bottom:10px;}
+.oku-txt{font-size:12px;color:#8a5a2a;line-height:1.7;}
+
+/* CTA */
+.cta-box{background:linear-gradient(135deg,#fff0f5,#fff8e0);border:2px solid #ffb3cc;border-radius:16px;padding:16px;text-align:center;margin-bottom:10px;}
+.cta-title{font-size:15px;font-weight:700;color:#7a4a2a;margin-bottom:6px;}
+.cta-txt{font-size:12px;color:#c08050;line-height:1.7;margin-bottom:10px;}
+.cta-btn{display:block;background:#ffb347;color:white;font-size:14px;font-weight:700;padding:12px;border-radius:12px;text-decoration:none;border:none;cursor:pointer;font-family:inherit;width:100%;}
+.cta-features{text-align:left;background:#fff;border-radius:10px;padding:10px;margin-bottom:10px;}
+.cta-feature{font-size:12px;color:#7a4a2a;padding:3px 0;display:flex;align-items:center;gap:6px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Trial Banner -->
+  <div class="trial-banner">
+    <h3>🐹 たいけん版です！</h3>
+    <p>きろくは ほぞんされません。<br>まいにち つかうには せいしき版を どうぞ♪</p>
+    <button class="trial-btn" onclick="scrollToCTA()">せいしき版を みてみる →</button>
+  </div>
+
+  <!-- Header -->
+  <div class="header-wrap">
+    <div class="header-top">
+      <div class="date-box">ひづけ：<span id="dateDisplay"></span></div>
+      <div class="trial-badge">たいけん版</div>
+    </div>
+    <div class="main-title">ASDキッズのための<br>きょうのプロフィール帳<br>チェックリスト</div>
+    <div class="ribbon">いっしょに できた！が ふえる まいにちに♪</div>
+    <div class="kibun-label">🌸 きょうの きぶん</div>
+    <div class="kibun-row">
+      <button class="kb" onclick="setKb(this,5)">😄</button>
+      <button class="kb" onclick="setKb(this,4)">🙂</button>
+      <button class="kb" onclick="setKb(this,3)">😐</button>
+      <button class="kb" onclick="setKb(this,2)">😟</button>
+      <button class="kb" onclick="setKb(this,1)">😢</button>
+    </div>
+    <input class="hitokoto" placeholder="ひとこと（じぶんで かいてみよう）">
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="pg('yotei',this)">よてい</button>
+    <button class="tab" onclick="pg('check',this)">チェック</button>
+    <button class="tab" onclick="pg('furi',this)">ふりかえり</button>
+  </div>
+
+  <!-- よてい -->
+  <div class="pg on" id="pg-yotei">
+    <div class="card">
+      <div class="sec-title">🌿 きょうの よてい（みどおし）</div>
+      <div class="yotei-row"><span style="font-size:18px;width:24px;text-align:center;">☀️</span><input class="yotei-input" placeholder="あさ"></div>
+      <div class="yotei-row"><span style="font-size:18px;width:24px;text-align:center;">⛅</span><input class="yotei-input" placeholder="ひる"></div>
+      <div class="yotei-row"><span style="font-size:18px;width:24px;text-align:center;">🌙</span><input class="yotei-input" placeholder="よる"></div>
+    </div>
+    <div class="card card-yellow">
+      <div class="sec-title">⭐ きょうの ミッション（3つだけ！）</div>
+      <div class="mission-row"><div class="mn">1</div><input class="mi" placeholder="ここに かいてね"></div>
+      <div class="mission-row"><div class="mn">2</div><input class="mi" placeholder="ここに かいてね"></div>
+      <div class="mission-row"><div class="mn">3</div><input class="mi" placeholder="ここに かいてね"></div>
+      <div style="font-size:10px;color:#c08050;margin-top:6px;text-align:center;">むずかしかったら おうちのひとと きめよう！🐹</div>
+    </div>
+    <div class="card card-pink">
+      <div class="sec-title">💛 じぶんで えらぼう！</div>
+      <div style="font-size:11px;color:#c08050;margin-bottom:6px;">きょうの やりかたを えらんで タップしてね</div>
+      <div class="style-grid">
+        <button class="style-btn" onclick="tog(this)">🏠 ひとりで やる</button>
+        <button class="style-btn" onclick="tog(this)">👫 いっしょに やる</button>
+        <button class="style-btn" onclick="tog(this)">🔇 しずかな ばしょ</button>
+        <button class="style-btn" onclick="tog(this)">🎵 おとがある ばしょ</button>
+        <button class="style-btn" onclick="tog(this)">⚡ すぐに やる</button>
+        <button class="style-btn" onclick="tog(this)">⏰ あとで やる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- チェック -->
+  <div class="pg" id="pg-check">
+    <div class="card card-pink">
+      <div class="sec-title">🌸 できたかな？チェック</div>
+      <div style="font-size:11px;color:#c08050;margin-bottom:6px;">できたら ⭐ まあまあは ○ むずかしかったは △</div>
+      <table class="check-tbl">
+        <tr><th style="text-align:left;width:55%">やること</th><th>⭐</th><th>○</th><th>△</th></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">⏰</span>おきる・ねじかん</td><td><button class="cb" onclick="ck('c1','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c1','o',this)">○</button></td><td><button class="cb" onclick="ck('c1','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">🍙</span>ごはんを たべた</td><td><button class="cb" onclick="ck('c2','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c2','o',this)">○</button></td><td><button class="cb" onclick="ck('c2','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">🪥</span>はみがき・おきがえ</td><td><button class="cb" onclick="ck('c3','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c3','o',this)">○</button></td><td><button class="cb" onclick="ck('c3','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">📋</span>やることを かくにん</td><td><button class="cb" onclick="ck('c4','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c4','o',this)">○</button></td><td><button class="cb" onclick="ck('c4','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">💬</span>おはなし・やりとり</td><td><button class="cb" onclick="ck('c5','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c5','o',this)">○</button></td><td><button class="cb" onclick="ck('c5','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">💗</span>きもちを つたえた</td><td><button class="cb" onclick="ck('c6','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c6','o',this)">○</button></td><td><button class="cb" onclick="ck('c6','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">⭐</span>がんばった・できた</td><td><button class="cb" onclick="ck('c7','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c7','o',this)">○</button></td><td><button class="cb" onclick="ck('c7','h',this)">△</button></td></tr>
+        <tr><td class="cl"><span style="font-size:15px;width:20px;">😴</span>リラックスできた</td><td><button class="cb" onclick="ck('c8','d',this)">⭐</button></td><td><button class="cb" onclick="ck('c8','o',this)">○</button></td><td><button class="cb" onclick="ck('c8','h',this)">△</button></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="sec-title">⭐ シールを あつめよう！</div>
+      <div class="stk-choices">
+        <span class="sc" onclick="addS('⭐')">⭐</span>
+        <span class="sc" onclick="addS('🌟')">🌟</span>
+        <span class="sc" onclick="addS('💛')">💛</span>
+        <span class="sc" onclick="addS('🌸')">🌸</span>
+        <span class="sc" onclick="addS('🐹')">🐹</span>
+        <span class="sc" onclick="addS('🎉')">🎉</span>
+        <span class="sc" onclick="addS('🍀')">🍀</span>
+        <span class="sc" onclick="addS('🌈')">🌈</span>
+      </div>
+      <div class="sticker-area" id="sa"></div>
+      <div style="font-size:13px;text-align:center;color:#e87820;font-weight:700;margin:4px 0;" id="sc2">0 こ</div>
+      <div class="prog-wrap"><div class="prog-fill" id="pf" style="width:0%"></div></div>
+      <div class="reward-grid">
+        <div class="rw-box"><div class="rw-lbl">3こ</div><div class="rw-ico">🎁</div><div class="rw-txt">ちいさな<br>ごほうび</div></div>
+        <div class="rw-box"><div class="rw-lbl">5こ</div><div class="rw-ico">⭐</div><div class="rw-txt">すきな<br>あそび</div></div>
+        <div class="rw-box"><div class="rw-lbl">7こ</div><div class="rw-ico">👑</div><div class="rw-txt">スペシャル<br>ごほうび！</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ふりかえり -->
+  <div class="pg" id="pg-furi">
+    <div class="card card-green">
+      <div class="sec-title">🍀 きょうの ふりかえり</div>
+      <div style="font-size:11px;color:#70a060;margin-bottom:8px;">いっしょに かいてみよう！</div>
+      <div class="furi-grid">
+        <div class="furi-box"><div class="furi-lbl">⭐ じぶんで<br>たのしかった・うれしかった</div><textarea class="furi-ta" placeholder="かいてみよう..."></textarea></div>
+        <div class="furi-box"><div class="furi-lbl">⭐ おうちのひとから<br>よかったところ</div><textarea class="furi-ta" placeholder="かいてみよう..."></textarea></div>
+        <div class="furi-box"><div class="furi-lbl">がんばったこと</div><textarea class="furi-ta" placeholder="かいてみよう..."></textarea></div>
+        <div class="furi-box"><div class="furi-lbl">あしたに いかしたいこと</div><textarea class="furi-ta" placeholder="かいてみよう..."></textarea></div>
+      </div>
+    </div>
+    <div class="okusuri">
+      <div style="font-size:24px;margin-bottom:4px;">🐹</div>
+      <div class="oku-txt">ぜんぶ できなくても だいじょうぶ！<br>できたことが ひとつ あれば 100てん！<br>きょうも えらい！ すてきな いちにちだったね♪</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-box" id="ctaBox">
+    <div class="cta-title">🌟 せいしき版では もっとできる！</div>
+    <div class="cta-features">
+      <div class="cta-feature">📅 まいにちの きろくが ほぞんされる</div>
+      <div class="cta-feature">📊 かこの きろくを みかえせる</div>
+      <div class="cta-feature">🔐 かぞくだけの ひみつの きろく</div>
+      <div class="cta-feature">💗 おうちのひと サポートメモ</div>
+      <div class="cta-feature">📱 スマホで まいにち つかえる</div>
+    </div>
+    <div class="cta-txt">まいにち いっしょに つかって<br>「できた！」を ふやしていこう🐹</div>
+    <div style="font-size:11px;color:#c08050;margin-bottom:6px;background:#fff;border-radius:8px;padding:6px 10px;">※ STORESに登録後、商品URLをここに入れてね</div>
+    <a class="cta-btn" href="https://ここにSTORESのURLを入れてね" target="_blank">980円セットを購入してつかってみる →</a>
+  </div>
+
+</div>
+
+<script>
+var stickers=[];
+var checks={};
+
+var now=new Date();
+var y=now.getFullYear();
+var m=now.getMonth()+1;
+var d=now.getDate();
+document.getElementById('dateDisplay').textContent=y+'年'+m+'月'+d+'日';
+
+function pg(id,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+function setKb(btn,v){
+  document.querySelectorAll('.kb').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function tog(btn){btn.classList.toggle('on');}
+
+function ck(id,type,btn){
+  var row=btn.closest('tr');
+  var btns=row.querySelectorAll('.cb');
+  if(checks[id]===type){btn.classList.remove(type);checks[id]=null;}
+  else{
+    btns.forEach(function(b){b.classList.remove('d','o','h');});
+    btn.classList.add(type);checks[id]=type;
+    if(type==='d') addS('⭐');
+  }
+}
+
+function addS(s){stickers.push(s);renderS();}
+function renderS(){
+  var a=document.getElementById('sa');
+  a.innerHTML='';
+  stickers.forEach(function(s){var sp=document.createElement('span');sp.className='stk';sp.textContent=s;a.appendChild(sp);});
+  var n=stickers.length;
+  document.getElementById('sc2').textContent=n+' こ';
+  document.getElementById('pf').style.width=Math.min(Math.round(n/7*100),100)+'%';
+}
+
+function scrollToCTA(){
+  document.getElementById('ctaBox').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
